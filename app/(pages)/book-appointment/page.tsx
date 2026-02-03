@@ -35,6 +35,7 @@ interface FormErrors {
 
 export default function BookAppointmentPage() {
   const router = useRouter()
+  const [authorized, setAuthorized] = useState(false)
   const [formData, setFormData] = useState<AppointmentFormData>({
     veterinarian: '',
     ownerName: '',
@@ -46,6 +47,23 @@ export default function BookAppointmentPage() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    const isClientLoggedIn = sessionStorage.getItem('isClientLoggedIn')
+    if (isClientLoggedIn !== 'true') {
+      router.push('/')
+      return
+    }
+    setAuthorized(true)
+  }, [router])
+
+  if (!authorized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   // hardcoded veterinarians
   const veterinarians: Veterinarian[] = [
@@ -68,14 +86,6 @@ export default function BookAppointmentPage() {
 
   const animalTypes = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Hamster', 'Guinea Pig', 'Other']
   const genders = ['Male', 'Female']
-
-  useEffect(() => {
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn')
-    if (isLoggedIn !== 'true') {
-      router.push('/')
-      return
-    }
-  }, [router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -157,7 +167,7 @@ export default function BookAppointmentPage() {
       setSubmitted(true)
 
       setTimeout(() => {
-        router.push('/dashboard')
+        router.push('/my-appointments')
       }, 2000)
     }, 500)
   }
@@ -190,7 +200,7 @@ export default function BookAppointmentPage() {
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/my-appointments')}
               className="text-muted-foreground hover:text-foreground"
             >
               ← Back

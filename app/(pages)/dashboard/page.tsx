@@ -21,6 +21,7 @@ interface Report {
 
 export default function DashboardPage() {
   const router = useRouter()
+  const [authorized, setAuthorized] = useState(false)
   const [userName, setUserName] = useState('User')
   const [reports, setReports] = useState<Report[]>([
     {
@@ -53,10 +54,19 @@ export default function DashboardPage() {
   ])
   const [searchTerm, setSearchTerm] = useState('')
   const [showMessage, setShowMessage] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false) // Declare setIsModalOpen variable
+  const [isModalOpen, setIsModalOpen] = useState(false) // declare setIsModalOpen variable
 
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn')
+    const userRole = sessionStorage.getItem('userRole')
+    
+    // only veterinarians can access dashboard
+    if (isLoggedIn !== 'true' || userRole !== 'veterinarian') {
+      router.push('/')
+      return
+    }
+    
+    setAuthorized(true)
     const name = sessionStorage.getItem('userName')
 
     if (isLoggedIn !== 'true') {
@@ -68,7 +78,7 @@ export default function DashboardPage() {
       setUserName(name)
     }
 
-    // Check if just completed post-confirmation
+    // check if just completed post-confirmation
     const clinicData = sessionStorage.getItem('clinicData')
     if (clinicData) {
       setShowMessage(true)
@@ -93,6 +103,14 @@ export default function DashboardPage() {
   const totalReports = reports.length
   const totalPatients = reports.length
   const activeReports = 0
+
+  if (!authorized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

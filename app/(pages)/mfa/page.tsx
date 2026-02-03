@@ -31,13 +31,24 @@ export default function MFAPage() {
     setError('')
     setLoading(true)
 
-    // Check MFA code
+    // check MFA code
     if (code.replace(/\s/g, '') === CORRECT_MFA_CODE.replace(/\s/g, '')) {
-      sessionStorage.setItem('isLoggedIn', 'false') // Still need to complete pre-confirmation
+      const userRole = sessionStorage.getItem('userRole')
       sessionStorage.setItem('mfaVerified', 'true')
-      setTimeout(() => {
-        router.push('/pre-confirmation')
-      }, 500)
+      
+      // redirect based on role
+      if (userRole === 'client') {
+        sessionStorage.setItem('isClientLoggedIn', 'true')
+        setTimeout(() => {
+          router.push('/book-appointment')
+        }, 500)
+      } else {
+        // veterinarian flow
+        sessionStorage.setItem('isLoggedIn', 'false') // still need to complete pre-confirmation
+        setTimeout(() => {
+          router.push('/pre-confirmation')
+        }, 500)
+      }
     } else {
       setError('El código MFA es incorrecto. Intenta de nuevo.')
       setLoading(false)
@@ -55,7 +66,7 @@ export default function MFAPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-background to-secondary flex items-center justify-center p-4">
+    <div className="min-h-screen bg-lineart-to-b from-background to-secondary flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-0 shadow-lg">
         <div className="p-8">
           <div className="flex justify-center mb-8">
@@ -85,7 +96,7 @@ export default function MFAPage() {
                 className="h-11 text-center text-lg letter-spacing-widest font-mono"
               />
               <p className="text-xs text-muted-foreground mt-2">
-                (Código de demostración: 488 519) {/* hardcoded just for the example */}
+                (Código de demostración: 488 519)
               </p>
             </div>
 
