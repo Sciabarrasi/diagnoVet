@@ -1,7 +1,7 @@
 # DiagnovetAI - Veterinary Clinic Management System
 
 A modern management application for veterinary clinics built with Next.js, TypeScript, Tailwind CSS, and shadcn/ui.
-
+(Demo video: https://www.youtube.com/watch?v=OBrui0ZBFCU)
 ## Features
 # For Veterinarians
 
